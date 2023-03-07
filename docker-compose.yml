@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  api:
+    build: 
+      dockerfile: Dockerfile.dev
+    container_name: htmlParser
+    restart: always
+    command: flask run --host=0.0.0.0
+    ports:
+      - "5000:5000"

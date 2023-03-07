@@ -1,23 +1,29 @@
-from flask import Flask, request, make_response
-from handler import Parser
+from flask import Flask, request, make_response, jsonify
+from parserHandler import Parser
 import pandas as pd
+import customExeptions as cex
 
 
 app = Flask(__name__)
 
 
-@app.route("/", methods=["GET"])
+@app.route("/", methods=["GET", "POST"])
 def parser():
 
-
-    # url: str = request.args.get("url", "")
-    url = "https://ru.wikipedia.org/wiki/%D0%A2%D1%83-160"
+    url: str = request.args.get("url", "")
     
-    a = Parser(url)
-    csv_data = a.csvFile()
-    # header, links, paragraphs, lang = a.xxx()
-    # df = pd.DataFrame({'URL': pd.Series(url), 'Header': pd.Series(header), 'Paragraph': pd.Series(paragraphs), 'Links': pd.Series(links), 'Language': pd.Series(lang)})
-    # csv_data = df.to_csv(index=False)
+    try:
+        parser = Parser(url)
+        csv_data = parser.csvFile()
+    except cex.ParserExeption:
+        return jsonify({"exeption": "Something wrong with Parser"}), 200
+    except cex.ConvertToCSVExeption:
+        return jsonify({"exeption": "Something wrong with CSV converter"}), 200
+    except cex.RequestExeption:
+        return jsonify({"exeption": "Something wrong with URL request"}), 200
+    except:
+        return jsonify({"exeption": "Something go wrong completely"}), 200
+
     response = make_response(csv_data)
 
     response.headers['Content-Disposition'] = 'attachment; filename=data.csv'

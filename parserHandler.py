@@ -4,7 +4,6 @@ import unicodedata
 from langdetect import detect
 import pandas as pd
 import customExeptions as cex
-from flask_sqlalchemy import SQLAlchemy
 
 
 class Parser:
